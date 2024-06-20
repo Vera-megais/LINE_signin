@@ -78,14 +78,9 @@
         })
 
       function addUser(img, name) {
-        $("img").css({
-          "display": "block"
-        });
-        $("p").css({
-          "display": "block"
-        });
-        $("img").attr("src", img);
-        $("p").text(name);
+        $("body").append(imgBlock, nameBlock);
+        let imgBlock = $("img").attr("src", img);
+        let nameBlock = $("p").text(name);
       }
 
       function removeUser() {
