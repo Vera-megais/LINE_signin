@@ -8,13 +8,25 @@
 
   <!-- js -->
   <script src="./js/jquery-3.6.1.min.js"></script>
+
+  <style>
+    img {
+      width: 100px;
+      height: 100px;
+      display: none;
+    }
+
+    p {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
   <input type="button" class="line_signin" value="LINE登入">
   <input type="button" class="line_signout" value="LINE登出">
-  <img src="" alt="" style="display: block; width: 50px; height: 50px;">
+  <img src="" alt="">
   <p></p>
 
   <script>
@@ -66,13 +78,23 @@
         })
 
       function addUser(img, name) {
+        $("img").css({
+          "display": "block"
+        });
+        $("p").css({
+          "display": "block"
+        });
         $("img").attr("src", img);
         $("p").text(name);
       }
 
       function removeUser() {
-        $("img").attr("src", "");
-        $("p").text("");
+        $("img").css({
+          "display": "none"
+        });
+        $("p").css({
+          "display": "none"
+        });
       }
 
     })
