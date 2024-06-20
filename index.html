@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINE_signin</title>
+
+  <!-- js -->
+  <script src="./js/jquery-3.6.1.min.js"></script>
+</head>
+
+<body>
+
+  <input type="button" class="line_signin" value="LINE登入">
+  <input type="button" class="line_signout" value="LINE登出">
+  <img src="" alt="" style="display: block;">
+  <p></p>
+
+  <script>
+    $(function () {
+
+      // 登入按鈕
+      $(".line_signin").click(function () {
+        LineAuth();
+      })
+
+      // 登出按鈕
+      $(".line_signout").click(function () {
+        removeUser();
+        localStorage.removeItem("line_signin");
+      })
+
+      function LineAuth() {
+        let client_id = '2004731617'; // Channel ID
+        let redirect_url = 'https://vera-megais.github.io/LINE_signin/'; // Callback URL
+        let url = 'https://access.line.me/oauth2/v2.1/authorize?';
+        url += 'response_type=code';
+        url += '&client_id=' + client_id;
+        url += '&redirect_uri=' + redirect_url;
+        url += '&state=login';
+        url += '&scope=profile%20openid%20email';
+        window.location.href = url;
+      }
+
+      $.ajax({
+        url: "https://api.line.me/oauth2/v2.1/token",
+        dataType: "json",
+        data: {
+          grant_type: "authorization_code",
+          code: new URL(location.href).searchParams.get("code"),
+          redirect_uri: "https://vera-megais.github.io/LINE_signin/", // Callback URL
+          client_id: "2004731617", // Channel ID
+          client_secret: "a128563c832b7151141ddb1353aa7e73" // Channel secret
+        },
+        type: "post"
+      })
+        .done(function (res) {
+          let data = JSON.parse(JSON.stringify(res));
+          let idToken = data.id_token;
+          let userinfo = parseJwt(idToken);
+          addUser(userinfo.picture, userinfo.name);
+          localStorage.setItem("line_signin", "true");
+          console.log(data);
+          console.log(userinfo);
+        })
+
+      function addUser(img, name) {
+        $("img").attr("src", img);
+        $("p").text(name);
+      }
+
+      function removeUser() {
+        $("img").attr("src", "");
+        $("p").text("");
+      }
+
+    })
+
+    // 解碼函式
+    function parseJwt(token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      return JSON.parse(jsonPayload);
+    };
+  </script>
+
+</body>
+
+</html>
